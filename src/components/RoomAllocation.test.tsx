@@ -4,11 +4,8 @@ import '@testing-library/jest-dom'
 import RoomAllocation from './RoomAllocation'
 
 describe('RoomAllocation Component', () => {
-  let onChangeMock: jest.Mock
-
   beforeEach(() => {
-    onChangeMock = jest.fn()
-    render(<RoomAllocation guest={6} room={2} onChange={onChangeMock} />)
+    render(<RoomAllocation guest={6} room={2} />)
   })
 
   it('renders with default values', () => {

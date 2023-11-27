@@ -3,19 +3,9 @@ import RoomAllocation from './components/RoomAllocation'
 
 const App: React.FC = () => {
   const [guest, setGuest] = useState(10)
-  const [room, setRoom] = useState(3)
+  const [room, setRoom] = useState(4)
 
-  return (
-    <div>
-      <RoomAllocation
-        guest={guest}
-        room={room}
-        onChange={(result) => {
-          console.log(result, 'result')
-        }}
-      />
-    </div>
-  )
+  return <RoomAllocation guest={guest} room={room} />
 }
 
 export default App

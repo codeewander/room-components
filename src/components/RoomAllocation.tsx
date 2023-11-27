@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import QuantitySelector from './QuantitySelector'
 
-interface Allocation {
+export interface Allocation {
   adult: number
   child: number
 }
@@ -9,16 +9,13 @@ interface Allocation {
 interface RoomAllocationProps {
   guest: number
   room: number
-  onChange: (result: Allocation[]) => void
 }
-const RoomAllocation: React.FC<RoomAllocationProps> = ({
-  guest,
-  room,
-  onChange,
-}) => {
+const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
   const [roomAllocations, setRoomAllocations] = useState<Allocation[]>(
     Array(room).fill({ adult: 1, child: 0 })
   )
+  const capacityPerRoom = 4
+
   const calculateMaxValue = (
     remainingGuests: number,
     allocation: Allocation,
@@ -27,7 +24,7 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({
     const { adult, child } = allocation
     const [minusNumber, addedNumber] =
       type === 'adult' ? [child, adult] : [adult, child]
-    const maxCapacityPerRoom = 4 - minusNumber
+    const maxCapacityPerRoom = capacityPerRoom - minusNumber
 
     return Math.min(remainingGuests + addedNumber, maxCapacityPerRoom)
   }
@@ -47,12 +44,6 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({
     newAllocations[index] = { ...newAllocations[index], [type]: inputNumber }
     setRoomAllocations(newAllocations)
   }
-
-  useEffect(() => {
-    if (totalGuests <= guest) {
-      onChange([...roomAllocations])
-    }
-  }, [roomAllocations, guest, onChange, totalGuests])
 
   return (
     <div className="flex flex-col gap-3 p-2">

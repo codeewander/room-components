@@ -18,7 +18,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   value,
 }) => {
   const [initialValue, setInitialValue] = useState<string | number>(value)
-  const [step, setStep] = useState(1)
+  const step = 1
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
