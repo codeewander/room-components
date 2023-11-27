@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.increment-btn,
+.decrement-btn {
+  @apply text-base w-12 h-12 rounded border border-solid;
+  color: theme('colors.primary');
+  border-color: theme('colors.primary');
+  background-color: #fff;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-number {
+  @apply w-12 h-12 text-center rounded border border-solid;
+  color: theme('colors.gray');
+  border-color: theme('colors.gray');
+}
+.increment-btn.disabled,
+.decrement-btn.disabled {
+  opacity: 0.5;
+}
+.section-title {
+  @apply text-base font-medium;
+  color: theme('colors.darkGray');
+}
+.selector-title {
+  @apply text-sm font-medium;
+  color: theme('colors.darkGray');
+}
+.selector-description {
+  @apply text-sm;
+  color: theme('colors.gray');
+}
+.info-block {
+  @apply text-sm p-4 rounded;
+  color: theme('colors.darkGray');
+  background-color: #d1f2ff;
+  border: 1px solid #3fc5fa;
+}
+.divider {
+  color: theme('colors.gray');
+  opacity: 0.5;
+}
