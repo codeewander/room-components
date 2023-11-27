@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from 'react'
-import QuantitySelector from './components/QuantitySelector'
+import React, { useState, useMemo, useEffect } from 'react'
+import QuantitySelector from './QuantitySelector'
 
 interface Allocation {
   adult: number
@@ -11,8 +11,11 @@ interface RoomAllocationProps {
   room: number
   onChange: (result: Allocation[]) => void
 }
-function RoomAllocation(props: RoomAllocationProps) {
-  const { guest, room, onChange } = props
+const RoomAllocation: React.FC<RoomAllocationProps> = ({
+  guest,
+  room,
+  onChange,
+}) => {
   const [roomAllocations, setRoomAllocations] = useState<Allocation[]>(
     Array(room).fill({ adult: 1, child: 0 })
   )
@@ -68,7 +71,7 @@ function RoomAllocation(props: RoomAllocationProps) {
               <span className="selector-description">年齡 20+</span>
             </div>
             <QuantitySelector
-              name={`room-${index}-adult`}
+              name={`room-${index + 1}-adult`}
               min={1}
               max={calculateMaxValue(guest - totalGuests, allocation, 'adult')}
               handleChange={(inputNumber) =>
@@ -80,7 +83,7 @@ function RoomAllocation(props: RoomAllocationProps) {
           <div className="flex justify-between">
             <h4 className="selector-title">小孩</h4>
             <QuantitySelector
-              name={`room-${index}-child`}
+              name={`room-${index + 1}-child`}
               min={0}
               max={calculateMaxValue(guest - totalGuests, allocation, 'child')}
               handleChange={(inputNumber) =>

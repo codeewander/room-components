@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "module": "ESNext",
+    "target": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "noEmit": true,
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["@types/jest", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*"]
 }

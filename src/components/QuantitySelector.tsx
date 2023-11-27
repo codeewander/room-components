@@ -1,8 +1,8 @@
-import { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, KeyboardEvent } from 'react'
 import CustomInputNumber from './CustomInputNumber'
 import { MinusSmallIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 
-interface QuantitySelectorProps {
+export interface QuantitySelectorProps {
   name: string
   max: number
   handleChange: (number: number) => void
@@ -10,8 +10,13 @@ interface QuantitySelectorProps {
   min: number
 }
 
-function QuantitySelector(props: QuantitySelectorProps) {
-  const { name, max, min, handleChange, value } = props
+const QuantitySelector: React.FC<QuantitySelectorProps> = ({
+  name,
+  max,
+  min,
+  handleChange,
+  value,
+}) => {
   const [initialValue, setInitialValue] = useState<string | number>(value)
   const [step, setStep] = useState(1)
 
@@ -65,10 +70,11 @@ function QuantitySelector(props: QuantitySelectorProps) {
       <button
         className={`decrement-btn ${value <= min ? 'disabled' : ''}`}
         onClick={handleDecrement}
-        aria-label={`decrement by ${step}`}
+        aria-label={`minus ${step}`}
         disabled={value <= min}
+        data-testid="decrement-button"
       >
-        <MinusSmallIcon />
+        <MinusSmallIcon aria-hidden="true" />
       </button>
       <CustomInputNumber
         value={initialValue}
@@ -83,10 +89,11 @@ function QuantitySelector(props: QuantitySelectorProps) {
       <button
         className={`increment-btn ${value >= max ? 'disabled' : ''}`}
         onClick={handleIncrement}
-        aria-label={`increment by ${step}`}
+        aria-label={`add ${step}`}
         disabled={value >= max}
+        data-testid="increment-button"
       >
-        <PlusSmallIcon />
+        <PlusSmallIcon aria-hidden="true" />
       </button>
     </div>
   )

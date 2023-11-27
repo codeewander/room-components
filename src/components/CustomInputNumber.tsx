@@ -1,5 +1,5 @@
-import { ChangeEvent, FocusEvent } from 'react'
-interface CustomInputNumberProps {
+import React, { ChangeEvent, FocusEvent, KeyboardEvent } from 'react'
+export interface CustomInputNumberProps {
   min: number
   max: number
   step: number
@@ -9,21 +9,37 @@ interface CustomInputNumberProps {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   onBlur: (event: FocusEvent<HTMLInputElement>) => void
 }
-const CustomInputNumber = (props: CustomInputNumberProps) => {
-  const { min, max, step, name, value, disabled, onChange, onBlur } = props
+const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
+  min,
+  max,
+  step,
+  name,
+  value,
+  disabled,
+  onChange,
+  onBlur,
+}) => {
   return (
-    <input
-      className={`input-number ${disabled ? 'disabled' : ''}`}
-      type="number"
-      value={value}
-      disabled={disabled}
-      min={min}
-      max={max}
-      step={step}
-      name={name}
-      onChange={onChange}
-      onBlur={onBlur}
-    />
+    <>
+      <label
+        className="hidden"
+        htmlFor={`${name}-number-of-people`}
+      >{`${name} people`}</label>
+      <input
+        id={`${name}-number-of-people`}
+        className={`input-number ${disabled ? 'disabled' : ''}`}
+        type="number"
+        value={value}
+        disabled={disabled}
+        min={min}
+        max={max}
+        step={step}
+        name={name}
+        onChange={onChange}
+        onBlur={onBlur}
+        data-testid="custom-input-number"
+      />
+    </>
   )
 }
 

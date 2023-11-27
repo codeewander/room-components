@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import RoomAllocation from './RoomAllocation'
+import React, { useState } from 'react'
+import RoomAllocation from './components/RoomAllocation'
 
-const App = () => {
+const App: React.FC = () => {
   const [guest, setGuest] = useState(10)
   const [room, setRoom] = useState(3)
 
