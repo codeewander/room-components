@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import QuantitySelector from './QuantitySelector'
 
 export interface Allocation {
@@ -16,6 +16,15 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
   )
   const capacityPerRoom = 4
 
+  const unAllocatedGuests = useMemo(() => {
+    return (
+      guest -
+      roomAllocations.reduce((acc, cur) => {
+        return acc + cur.adult + cur.child
+      }, 0)
+    )
+  }, [roomAllocations, guest])
+
   const calculateMaxValue = (
     remainingGuests: number,
     allocation: Allocation,
@@ -28,21 +37,19 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
 
     return Math.min(remainingGuests + addedNumber, maxCapacityPerRoom)
   }
-
-  const totalGuests = useMemo(() => {
-    return roomAllocations.reduce((acc, cur) => {
-      return acc + cur.adult + cur.child
-    }, 0)
-  }, [roomAllocations])
-
   const handleAllocationChange = (
     index: number,
     type: string,
     inputNumber: number
   ) => {
-    const newAllocations = [...roomAllocations]
-    newAllocations[index] = { ...newAllocations[index], [type]: inputNumber }
-    setRoomAllocations(newAllocations)
+    setRoomAllocations((prevAllocations) => {
+      const newAllocations = [...prevAllocations]
+      newAllocations[index] = {
+        ...newAllocations[index],
+        [type]: inputNumber,
+      }
+      return newAllocations
+    })
   }
 
   return (
@@ -50,7 +57,7 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
       <h2 className="section-title">
         住客人數：{guest} 人 / {room} 房
       </h2>
-      <div className="info-block">尚未分配人數：{guest - totalGuests} 人</div>
+      <div className="info-block">尚未分配人數：{unAllocatedGuests} 人</div>
       {roomAllocations.map((allocation, index) => (
         <div className="flex flex-col gap-3" key={index}>
           <h3 className="section-title">
@@ -64,7 +71,7 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
             <QuantitySelector
               name={`room-${index + 1}-adult`}
               min={1}
-              max={calculateMaxValue(guest - totalGuests, allocation, 'adult')}
+              max={calculateMaxValue(unAllocatedGuests, allocation, 'adult')}
               handleChange={(inputNumber) =>
                 handleAllocationChange(index, 'adult', inputNumber)
               }
@@ -76,14 +83,14 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
             <QuantitySelector
               name={`room-${index + 1}-child`}
               min={0}
-              max={calculateMaxValue(guest - totalGuests, allocation, 'child')}
+              max={calculateMaxValue(unAllocatedGuests, allocation, 'child')}
               handleChange={(inputNumber) =>
                 handleAllocationChange(index, 'child', inputNumber)
               }
               value={allocation.child}
             />
           </div>
-          {index !== roomAllocations.length && <hr className="divider" />}
+          {index !== room - 1 && <hr className="divider" />}
         </div>
       ))}
     </div>
