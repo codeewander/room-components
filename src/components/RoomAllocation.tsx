@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'
-import QuantitySelector from './QuantitySelector'
+import React, { useState, useMemo, useEffect } from 'react'
+import CustomInputNumber from './CustomInputNumber'
 
 export interface Allocation {
   adult: number
@@ -9,12 +9,14 @@ export interface Allocation {
 interface RoomAllocationProps {
   guest: number
   room: number
+  onChange?: (result: Allocation[]) => void
 }
 const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
   const [roomAllocations, setRoomAllocations] = useState<Allocation[]>(
     Array(room).fill({ adult: 1, child: 0 })
   )
-  const capacityPerRoom = 4
+  const CAPACITY_PRE_ROOM = 4
+  const STEP = 1
 
   const unAllocatedGuests = useMemo(() => {
     return (
@@ -27,16 +29,16 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
 
   const calculateMaxValue = (
     remainingGuests: number,
-    allocation: Allocation,
+    { adult, child }: Allocation,
     type: string
   ): number => {
-    const { adult, child } = allocation
     const [minusNumber, addedNumber] =
       type === 'adult' ? [child, adult] : [adult, child]
-    const maxCapacityPerRoom = capacityPerRoom - minusNumber
+    const maxCapacityPerRoom = CAPACITY_PRE_ROOM - minusNumber
 
     return Math.min(remainingGuests + addedNumber, maxCapacityPerRoom)
   }
+
   const handleAllocationChange = (
     index: number,
     type: string,
@@ -68,26 +70,46 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
               <h4 className="selector-title">大人</h4>
               <span className="selector-description">年齡 20+</span>
             </div>
-            <QuantitySelector
+            <CustomInputNumber
               name={`room-${index + 1}-adult`}
               min={1}
               max={calculateMaxValue(unAllocatedGuests, allocation, 'adult')}
-              handleChange={(inputNumber) =>
+              step={STEP}
+              onChange={(inputNumber) =>
                 handleAllocationChange(index, 'adult', inputNumber)
               }
               value={allocation.adult}
+              onBlur={(inputNumber) =>
+                handleAllocationChange(index, 'adult', inputNumber)
+              }
+              disabled={{
+                increment:
+                  allocation.adult >=
+                  calculateMaxValue(unAllocatedGuests, allocation, 'adult'),
+                decrement: allocation.adult <= 1,
+              }}
             />
           </div>
           <div className="flex justify-between">
             <h4 className="selector-title">小孩</h4>
-            <QuantitySelector
+            <CustomInputNumber
               name={`room-${index + 1}-child`}
               min={0}
               max={calculateMaxValue(unAllocatedGuests, allocation, 'child')}
-              handleChange={(inputNumber) =>
+              step={STEP}
+              onChange={(inputNumber) =>
                 handleAllocationChange(index, 'child', inputNumber)
               }
               value={allocation.child}
+              onBlur={(inputNumber) =>
+                handleAllocationChange(index, 'child', inputNumber)
+              }
+              disabled={{
+                increment:
+                  allocation.child >=
+                  calculateMaxValue(unAllocatedGuests, allocation, 'child'),
+                decrement: allocation.child <= 0,
+              }}
             />
           </div>
           {index !== room - 1 && <hr className="divider" />}
