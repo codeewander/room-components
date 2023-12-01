@@ -4,8 +4,9 @@ import '@testing-library/jest-dom'
 import RoomAllocation from './RoomAllocation'
 
 describe('RoomAllocation Component', () => {
+  const mockOnChange = jest.fn()
   beforeEach(() => {
-    render(<RoomAllocation guest={6} room={2} />)
+    render(<RoomAllocation guest={6} room={2} onChange={mockOnChange} />)
   })
 
   it('renders with default values', () => {
@@ -34,7 +35,7 @@ describe('RoomAllocation Component', () => {
     expect(childInputElement2).toHaveValue(0)
   })
 
-  it('updates allocation on QuantitySelector change', () => {
+  it('updates allocation on customInputValue change', () => {
     const adultInputElement1 = screen.getByRole('spinbutton', {
       name: /room-1-adult/i,
     })

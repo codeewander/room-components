@@ -6,6 +6,7 @@ import '@testing-library/jest-dom'
 describe('CustomInputNumber', () => {
   const mockOnChange = jest.fn()
   const mockOnBlur = jest.fn()
+  const mockOnInputChange = jest.fn()
 
   const testData: CustomInputNumberProps = {
     min: 0,
@@ -13,12 +14,10 @@ describe('CustomInputNumber', () => {
     step: 1,
     name: 'test',
     value: 2,
-    disabled: {
-      increment: false,
-      decrement: false,
-    },
+    disabled: false,
     onChange: mockOnChange,
     onBlur: mockOnBlur,
+    handelInputChange: mockOnInputChange,
   }
 
   const renderCustomInputNumber = (props?: CustomInputNumberProps) =>
@@ -27,6 +26,7 @@ describe('CustomInputNumber', () => {
   beforeEach(() => {
     mockOnChange.mockClear()
     mockOnBlur.mockClear()
+    mockOnInputChange.mockClear()
   })
 
   it('input should have specific attributes', () => {
@@ -50,7 +50,9 @@ describe('CustomInputNumber', () => {
     fireEvent.mouseUp(incrementButton)
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledWith(testData.value + testData.step)
+      expect(mockOnInputChange).toHaveBeenCalledWith(
+        testData.value + testData.step
+      )
     })
   })
 
@@ -61,29 +63,20 @@ describe('CustomInputNumber', () => {
     fireEvent.mouseUp(decrementButton)
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledWith(testData.value - testData.step)
+      expect(mockOnInputChange).toHaveBeenCalledWith(
+        testData.value - testData.step
+      )
     })
   })
 
-  it('should disable increment and decrement buttons when disabled prop is true', () => {
-    const { getByTestId } = renderCustomInputNumber({
+  it('should disable input when disabled prop is true', () => {
+    const { container } = renderCustomInputNumber({
       ...testData,
-      disabled: {
-        increment: true,
-        decrement: true,
-      },
+      disabled: true,
     })
 
-    const incrementButton = getByTestId('increment-button')
-    const decrementButton = getByTestId('decrement-button')
-
-    fireEvent.mouseDown(incrementButton)
-    fireEvent.mouseUp(incrementButton)
-
-    fireEvent.mouseDown(decrementButton)
-    fireEvent.mouseUp(decrementButton)
-
-    expect(mockOnChange).not.toHaveBeenCalled()
+    const inputElement = container.querySelector('input')
+    expect(inputElement).toBeDisabled()
   })
 
   it('should handle long press increment correctly without exceeding max', async () => {
@@ -96,8 +89,8 @@ describe('CustomInputNumber', () => {
     fireEvent.mouseUp(incrementButton)
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledTimes(2)
-      expect(mockOnChange).toHaveBeenCalledWith(
+      expect(mockOnInputChange).toHaveBeenCalledTimes(2)
+      expect(mockOnInputChange).toHaveBeenCalledWith(
         testData.value + testData.step * 2
       )
     })
@@ -115,8 +108,8 @@ describe('CustomInputNumber', () => {
     fireEvent.mouseUp(incrementButton)
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledTimes(2)
-      expect(mockOnChange).toHaveBeenCalledWith(testData.max)
+      expect(mockOnInputChange).toHaveBeenCalledTimes(2)
+      expect(mockOnInputChange).toHaveBeenCalledWith(testData.max)
     })
   })
 
@@ -130,8 +123,8 @@ describe('CustomInputNumber', () => {
     fireEvent.mouseUp(decrementButton)
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledTimes(2)
-      expect(mockOnChange).toHaveBeenCalledWith(
+      expect(mockOnInputChange).toHaveBeenCalledTimes(2)
+      expect(mockOnInputChange).toHaveBeenCalledWith(
         testData.value - testData.step * 2
       )
     })
@@ -149,8 +142,8 @@ describe('CustomInputNumber', () => {
     fireEvent.mouseUp(decrementButton)
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledTimes(2)
-      expect(mockOnChange).toHaveBeenCalledWith(testData.min)
+      expect(mockOnInputChange).toHaveBeenCalledTimes(2)
+      expect(mockOnInputChange).toHaveBeenCalledWith(testData.min)
     })
   })
 })

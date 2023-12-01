@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import CustomInputNumber from './CustomInputNumber'
 
 export interface Allocation {
@@ -9,9 +9,13 @@ export interface Allocation {
 interface RoomAllocationProps {
   guest: number
   room: number
-  onChange?: (result: Allocation[]) => void
+  onChange: (result: Allocation[]) => void
 }
-const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
+const RoomAllocation: React.FC<RoomAllocationProps> = ({
+  guest,
+  room,
+  onChange,
+}) => {
   const [roomAllocations, setRoomAllocations] = useState<Allocation[]>(
     Array(room).fill({ adult: 1, child: 0 })
   )
@@ -44,14 +48,13 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
     type: string,
     inputNumber: number
   ) => {
-    setRoomAllocations((prevAllocations) => {
-      const newAllocations = [...prevAllocations]
-      newAllocations[index] = {
-        ...newAllocations[index],
-        [type]: inputNumber,
-      }
-      return newAllocations
-    })
+    const newAllocations = [...roomAllocations]
+    newAllocations[index] = {
+      ...newAllocations[index],
+      [type]: inputNumber,
+    }
+    setRoomAllocations(newAllocations)
+    onChange(newAllocations)
   }
 
   return (
@@ -75,19 +78,15 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
               min={1}
               max={calculateMaxValue(unAllocatedGuests, allocation, 'adult')}
               step={STEP}
-              onChange={(inputNumber) =>
+              handelInputChange={(inputNumber) => {
                 handleAllocationChange(index, 'adult', inputNumber)
-              }
-              value={allocation.adult}
-              onBlur={(inputNumber) =>
-                handleAllocationChange(index, 'adult', inputNumber)
-              }
-              disabled={{
-                increment:
-                  allocation.adult >=
-                  calculateMaxValue(unAllocatedGuests, allocation, 'adult'),
-                decrement: allocation.adult <= 1,
               }}
+              value={allocation.adult}
+              onBlur={(e) => console.log(e)}
+              onChange={(e) => {
+                console.log(e)
+              }}
+              disabled={unAllocatedGuests === 0}
             />
           </div>
           <div className="flex justify-between">
@@ -97,19 +96,15 @@ const RoomAllocation: React.FC<RoomAllocationProps> = ({ guest, room }) => {
               min={0}
               max={calculateMaxValue(unAllocatedGuests, allocation, 'child')}
               step={STEP}
-              onChange={(inputNumber) =>
+              handelInputChange={(inputNumber) => {
                 handleAllocationChange(index, 'child', inputNumber)
-              }
-              value={allocation.child}
-              onBlur={(inputNumber) =>
-                handleAllocationChange(index, 'child', inputNumber)
-              }
-              disabled={{
-                increment:
-                  allocation.child >=
-                  calculateMaxValue(unAllocatedGuests, allocation, 'child'),
-                decrement: allocation.child <= 0,
               }}
+              onChange={(e) => {
+                console.log(e)
+              }}
+              onBlur={(e) => console.log(e)}
+              value={allocation.child}
+              disabled={unAllocatedGuests === 0}
             />
           </div>
           {index !== room - 1 && <hr className="divider" />}

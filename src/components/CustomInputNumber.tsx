@@ -1,4 +1,11 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from 'react'
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  useRef,
+  MouseEvent,
+  FocusEvent,
+} from 'react'
 import { MinusSmallIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 
 export interface CustomInputNumberProps {
@@ -7,12 +14,10 @@ export interface CustomInputNumberProps {
   step: number
   name: string
   value: number
-  disabled: {
-    increment: boolean
-    decrement: boolean
-  }
-  onChange: (inputNumber: number) => void
-  onBlur: (inputNumber: number) => void
+  disabled: boolean
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onBlur: (e: FocusEvent<HTMLDivElement>) => void
+  handelInputChange: (inputNumber: number) => void
 }
 const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
   min,
@@ -23,6 +28,7 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
   disabled,
   onChange,
   onBlur,
+  handelInputChange,
 }) => {
   const [inputValue, setInputValue] = useState<number | string>(value)
   const timeoutRef = useRef<number | null>(null)
@@ -40,14 +46,16 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
     }
   }, [])
 
-  const handleBlur = () => {
+  const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value
+
     const isValidNumber =
       !isNaN(Number(inputValue)) &&
       Number(inputValue) >= min &&
       Number(inputValue) <= max
 
     if (isValidNumber) {
-      onBlur(Number(inputValue))
+      handelInputChange(Number(inputValue))
     } else {
       setInputValue(value)
     }
@@ -57,7 +65,7 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
     setInputValue((prev) => {
       const newValue = Number(prev) + step
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
-        onChange(newValue)
+        handelInputChange(newValue)
         return newValue
       } else {
         return prev
@@ -69,7 +77,7 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
     setInputValue((prev) => {
       const newValue = Number(prev) - step
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
-        onChange(newValue)
+        handelInputChange(newValue)
         return newValue
       } else {
         return prev
@@ -77,8 +85,11 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
     })
   }
 
-  const handleLongPress = (action: () => void) => {
-    action()
+  const handleLongPress = (
+    action: (e: MouseEvent<HTMLButtonElement>) => void,
+    e: MouseEvent<HTMLButtonElement>
+  ) => {
+    action(e)
     timeoutRef.current = setInterval(action, PRESS_TIME)
   }
 
@@ -102,14 +113,19 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
   }
 
   return (
-    <div className="flex gap-2" data-testid="custom-input-number">
+    <div
+      className="flex gap-2"
+      data-testid="custom-input-number"
+      onBlur={onBlur}
+      onChange={onChange}
+    >
       <button
-        className={`decrement-btn ${disabled.decrement && 'disabled'}`}
-        onMouseDown={() => handleLongPress(handleDecrement)}
+        className={`decrement-btn ${value <= min && 'disabled'}`}
+        onMouseDown={(e) => handleLongPress(handleDecrement, e)}
         onMouseUp={handleEndLongPress}
         onMouseLeave={handleEndLongPress}
         aria-label={`minus ${step}`}
-        disabled={disabled.decrement}
+        disabled={value <= min}
         data-testid="decrement-button"
       >
         <MinusSmallIcon aria-hidden="true" />
@@ -120,7 +136,7 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
       >{`${name} people`}</label>
       <input
         id={`${name}-number-of-people`}
-        className="input-number"
+        className={`input-number ${disabled ? 'disabled' : ''}`}
         type="number"
         value={inputValue}
         min={min}
@@ -129,14 +145,16 @@ const CustomInputNumber: React.FC<CustomInputNumberProps> = ({
         name={name}
         onChange={handleInputChange}
         onBlur={handleBlur}
+        disabled={disabled}
+        data-testid="input"
       />
       <button
-        className={`increment-btn ${disabled.increment && 'disabled'}`}
-        onMouseDown={() => handleLongPress(handleIncrement)}
+        className={`increment-btn ${value >= max && 'disabled'}`}
+        onMouseDown={(e) => handleLongPress(handleIncrement, e)}
         onMouseUp={handleEndLongPress}
         onMouseLeave={handleEndLongPress}
         aria-label={`add ${step}`}
-        disabled={disabled.increment}
+        disabled={value >= max}
         data-testid="increment-button"
       >
         <PlusSmallIcon aria-hidden="true" />
